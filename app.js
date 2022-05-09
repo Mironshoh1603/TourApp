@@ -1,9 +1,21 @@
 const express = require('express');
-const fs = require('fs');
+
+const tourRouter = require('./router/tourRouter');
+const userRouter = require('./router/userRouter');
+const app = express();
 const morgan = require('morgan');
 
-const tour = JSON.parse(
-  fs.readFileSync('./dev-data/data/tours-simple.json', 'utf-8')
-);
+app.use(express.json());
+app.use(morgan('common'));
 
-console.log(tour);
+app.use((req, res, next) => {
+  req.requestDate = new Date();
+  next();
+});
+
+app.use('/api/v1/tour', tourRouter);
+app.use('/api/v1/user', userRouter);
+
+app.use(express.static(`${__dirname}/public`));
+
+module.exports = app;
